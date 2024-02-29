@@ -5,6 +5,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Button, Card, Text } from 'react-native-paper';
 import { Dimensions } from 'react-native';
 
+
+
 // Get the full screen width and height
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -27,7 +29,21 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.8, // 90% of the screen width
         height: screenHeight * 0.5, // 40% of the screen height
 
+    },
+
+    textContainer: {
+        backgroundColor: colors.DarkGray,
+        padding: 30,
+        marginTop: 50,
+        borderLeftWidth: 4,
+        borderLeftColor: colors.primary,
+        borderRadius: 20
+
+
+
+
     }
+
 })
 export default () => {
     const [image, setImage] = useState(null)
@@ -106,35 +122,42 @@ export default () => {
 
 
 
-                {image &&
-                    <Card
-                        // style={{ margin: 5 }}
-                        style={styles.cardStyle}
-                        mode="contained"
-                        theme={{ colors: { surfaceVariant: colors.background } }}
-                        heigh
-                    >
+                {image ?
+                    (
+                        <Card
+                            // style={{ margin: 5 }}
+                            style={styles.cardStyle}
+                            mode="contained"
+                            theme={{ colors: { surfaceVariant: colors.background } }}
+                            heigh
+                        >
 
-                        <Card.Content>
-                            <Text variant="titleLarge">image  title</Text>
-                            <Text variant="bodyMedium">image content</Text>
+                            <Card.Content>
+                                <Text variant="titleLarge">image  title</Text>
+                                <Text variant="bodyMedium">image content</Text>
 
-                        </Card.Content>
+                            </Card.Content>
 
-                        <Card.Cover source={{ uri: image }} style={styles.cardImage} />
+                            <Card.Cover source={{ uri: image }} style={styles.cardImage} />
 
-                        <Card.Actions>
-                            <Button theme={{ colors: { primary: colors.textAndIcons, outline: colors.textAndIcons, } }} onPress={() => setImage(null)}>Cancel</Button>
-                            <Button theme={{ colors: { primary: colors.textAndIcons } }}>Ok</Button>
-                        </Card.Actions>
+                            <Card.Actions>
+                                <Button theme={{ colors: { primary: colors.textAndIcons, outline: colors.textAndIcons, } }} onPress={() => setImage(null)}>Cancel</Button>
+                                <Button theme={{ colors: { primary: colors.textAndIcons } }} onPress={() => alert("Your image has been sent for animal detection.Results will be displayed shortly.")}>Detect Animal</Button>
+                            </Card.Actions>
 
-                    </Card>
+                        </Card>
+                    ) : (
+                        <View style={styles.textContainer} >
+                            <Text variant="headlineMedium" style={{ textAlign: 'center', color: '#FFFFFF', }} >  Uncover the Wild: A Click Away from Nature's Wonders</Text>
+
+                        </View>
+                    )
                 }
 
 
             </View>
 
-        </SafeAreaView>
+        </SafeAreaView >
 
 
     )
