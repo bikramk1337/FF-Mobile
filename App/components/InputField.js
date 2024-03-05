@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native'
+import { View, TextInput, StyleSheet } from 'react-native'
 const style = StyleSheet.create({
     mainContainer: {
         flexDirection: 'row',
@@ -20,7 +20,7 @@ const style = StyleSheet.create({
 })
 
 
-export const InputField = ({ label, icon, inputType, keyboardType, fieldButtonLabel, fieldButtonFunction, onChangeText, condition, secureTextEntry, value, textContentType }) => {
+export const InputField = ({ label, icon, inputType, keyboardType, onChangeText, condition, secureTextEntry, value, maxLength, textContentType }) => {
     return (
 
 
@@ -29,11 +29,13 @@ export const InputField = ({ label, icon, inputType, keyboardType, fieldButtonLa
             {inputType == "password" ? (
                 <TextInput
                     placeholder={label}
-                    style={style.textInput}
-                    secureTextEntry={secureTextEntry}
-                    keyboardType={keyboardType}
-                    onChangeText={onChangeText}
                     value={value}
+                    style={style.textInput}
+                    keyboardType={keyboardType}
+                    secureTextEntry={secureTextEntry}
+                    onChangeText={onChangeText}
+                    maxLength={maxLength}
+
                 />) :
                 (
                     <TextInput
@@ -42,6 +44,7 @@ export const InputField = ({ label, icon, inputType, keyboardType, fieldButtonLa
                         style={style.textInput}
                         keyboardType={keyboardType}
                         textContentType={textContentType}
+                        maxLength={maxLength}
                         onChangeText={onChangeText} // Use onChangeText for TextInput
 
 
@@ -50,10 +53,6 @@ export const InputField = ({ label, icon, inputType, keyboardType, fieldButtonLa
 
                 )}
             {condition}
-
-            <TouchableOpacity onPress={fieldButtonFunction}>
-                <Text style={{ color: '#AD40AF', fontWeight: '700' }}>{fieldButtonLabel}</Text>
-            </TouchableOpacity>
 
         </View>
 

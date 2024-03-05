@@ -4,7 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const rootUrl = "http://192.168.1.181:8000"
 const loginApi = rootUrl + "/users"
-const registerApi = rootUrl + "/users"
+const registerApi = rootUrl + "/register"
+
+
 
 
 const fetchProcessor = async ({ method, url, data, token, isPrivate }) => {
@@ -55,6 +57,19 @@ export const loginUser = async (loginData) => {
 }
 
 
+export const registerNewUser = async (data) => {
+    const url = registerApi;
+    const obj = {
+        method: "post",
+        url,
+        data,
+        isPrivate: true,
+        token: "realSESSIONKEYISNEEDEDHERE"
+    }
+    return fetchProcessor(obj)
+}
+
+
 export const resetPassword = async (resetData) => {
 
     const url = loginApi + "/resetPassword"
@@ -69,3 +84,17 @@ export const resetPassword = async (resetData) => {
     return fetchProcessor(obj)
 
 }
+
+export const fetchOtpRequest = async (data) => {
+    const url = loginApi + "/requestOTP";
+    const obj = {
+        method: "put",
+        url,
+        data,
+        isPrivate: true,
+        token: "realSESSIONKEYISNEEDEDHERE"
+    };
+    console.log(data, "i am from axios")
+    return fetchProcessor(obj);
+};
+

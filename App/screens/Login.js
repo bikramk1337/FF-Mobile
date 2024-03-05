@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { SafeAreaView, Text, Image, StyleSheet, View, TextInput, TouchableOpacity } from 'react-native'
 import { Modal, Portal, Divider, Button, PaperProvider } from 'react-native-paper';
 import colors from '../constants/colors';
-import { MaterialIcons } from '@expo/vector-icons';
 import { CustomButton } from '../components/CustomButton';
 import { InputField } from '../components/InputField';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -10,6 +9,7 @@ import axios from 'axios'
 import emailValidation from '../hooks/emailValidation';
 import CustomModal from '../components/CustomModal';
 import { loginUser } from '../helper/axios';
+import { MaterialIcons, Feather } from '@expo/vector-icons';
 
 
 
@@ -68,16 +68,18 @@ export default ({ navigation }) => {
             email, password
         }
         try {
-            // url must be same network, not a localhostnetwork
+            // url must be same network, not a local host network
             const response = await loginUser(formData)
-            console.log(response)
+            alert(response.message)
+
             if (response.status >= 200 && response.status < 300) {
                 navigation.navigate('CaptureImage')
             }
 
 
         } catch (error) {
-            console.log(error)
+            alert(error.message);
+
 
         }
 
@@ -85,6 +87,7 @@ export default ({ navigation }) => {
 
 
     const handleForgetPassword = () => {
+        console.log(email)
         setVisible(true)
 
     }
@@ -136,9 +139,13 @@ export default ({ navigation }) => {
                                 icon={
                                     <MaterialIcons name="alternate-email" size={20} color={colors.textAndIcons} style={{ marginHorizontal: 15 }} />}
                                 keyboardType="email-address"
-
                                 onChangeText={e => handleEmail(e)}
                                 textContentType="emailAddress"
+                                condition={email.length < 1 ? null : emailVerified ?
+                                    (<Feather name="check-circle" color="green" size={20} />)
+                                    :
+                                    (<MaterialIcons name="error" color="red" size={20} />)
+                                }
 
                             >
                             </InputField>
@@ -147,11 +154,18 @@ export default ({ navigation }) => {
                                 icon={
                                     <MaterialIcons name="lock" size={20} color={colors.textAndIcons} style={{ marginHorizontal: 15 }} />}
                                 inputType='password'
-                                fieldButtonLabel={"forget?"}
-                                fieldButtonFunction={() => handleForgetPassword()}
-                                onChange={e => handlePassword(e)}
+                                // fieldButtonLabel={"forget?"}
+                                // fieldButtonFunction={() => handleForgetPassword()}
+
+                                onChangeText={e => handlePassword(e)}
                                 keyboardType={"numeric"}
                                 secureTextEntry={true}
+                                condition={
+                                    <TouchableOpacity onPress={() => handleForgetPassword()}>
+                                        <Text style={{ color: '#AD40AF', fontWeight: '700' }}>Forget?</Text>
+                                    </TouchableOpacity>
+
+                                }
                             >
                             </InputField>
                             <CustomButton label={"Login"} onPress={(e) => handleLogin(e)} icon={"login"} />

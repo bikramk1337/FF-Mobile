@@ -9,7 +9,8 @@ import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { InputField } from '../components/InputField';
 import { CustomButton } from '../components/CustomButton';
 import axios from 'axios'
-import emailValidation from '../hooks/emailValidation';
+import useEmailValidation from '../hooks/emailValidation';
+import { registerNewUser } from '../helper/axios';
 
 
 
@@ -31,13 +32,13 @@ const styles = StyleSheet.create({
 })
 
 
+
 export default ({ navigation }) => {
-    const { email, emailVerified, handleEmail } = emailValidation();
+    const { email, emailVerified, showPassword, password, confirmPassword, handleEmail, setShowPassword, handlePassword, handleConfirmPassword } = useEmailValidation();
     const [name, setName] = useState('')
     const [nameVerify, setNameVerify] = useState(false)
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setconfirmPassword] = useState('')
-    const [showPassword, setShowPassword] = useState(true)
+
+
 
     const handleName = (nameVar) => {
         setName(nameVar)
@@ -47,16 +48,7 @@ export default ({ navigation }) => {
         }
     }
 
-    const handlePassword = (passwordVar) => {
-        setPassword(passwordVar)
 
-
-    }
-    const handleConfirmPassword = (confirmPassVar) => {
-        setconfirmPassword(confirmPassVar)
-
-
-    }
     const handleSubmit = async () => {
         if (password !== confirmPassword) {
             alert('password do not match')
@@ -78,17 +70,15 @@ export default ({ navigation }) => {
 
         try {
             // url must be same network, not a localhostnetwork
-            const response = await axios.post('http://192.168.1.181:8000/register', formData);
+            const response = await registerNewUser(formData)  //axios.post('http://192.168.1.181:8000/register', formData);
             // Check for successful response status code (200-299)
-            if (response.status >= 200 && response.status < 300) {
+            alert(response.message)
+            if (response.status === "success") {
                 navigation.navigate('Login')
-                console.log("Registration successful");
             }
 
         } catch (error) {
-            let errorMessage = "Registration failed due to an unexpected error.";
-            console.log(error)
-            alert(errorMessage)
+            alert(error)
 
         }
 
@@ -126,6 +116,7 @@ export default ({ navigation }) => {
                         icon={
                             <MaterialIcons name="person-outline" size={20} color={colors.textAndIcons} style={{ marginHorizontal: 15 }} />}
                         onChangeText={e => handleName(e)}
+
                         condition={name.length < 1 ? null : nameVerify ?
                             (<Feather name="check-circle" color="green" size={20} />)
                             :
@@ -143,27 +134,27 @@ export default ({ navigation }) => {
                         label={'email'}
                         icon={
                             <MaterialIcons name="alternate-email" size={20} color={colors.textAndIcons} style={{ marginHorizontal: 15 }} />}
-                        keyboardType="email address"
+                        keyboardType="email-address"
                         onChangeText={e => handleEmail(e)}
                         textContentType={"emailAddress"}
+
                         condition={email.length < 1 ? null : emailVerified ?
                             (<Feather name="check-circle" color="green" size={20} />)
                             :
                             (<MaterialIcons name="error" color="red" size={20} />)
                         }
-                    // value="tseyang886@gmail.com"
                     >
                     </InputField>
+
                     <InputField
                         label={'password'}
                         icon={
                             <MaterialIcons name="lock" size={20} color={colors.textAndIcons} style={{ marginHorizontal: 15 }} />}
                         inputType='password'
-                        onChange={e => handlePassword(e)}
+                        onChangeText={e => handlePassword(e)}
+                        // value={"1234"}
                         secureTextEntry={showPassword}
                         keyboardType={"numeric"}
-
-
                         condition={<TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                             {password.length < 1 ? null : showPassword ?
                                 (
@@ -175,23 +166,21 @@ export default ({ navigation }) => {
                                 )}
 
                         </TouchableOpacity>}
-                    >/
-                    </InputField>
+                    />
+
                     <InputField
-                        label={' confirm password'}
+                        label={'confirm password'}
                         icon={
                             <MaterialIcons name="lock" size={20} color={colors.textAndIcons} style={{ marginHorizontal: 15 }} />}
                         inputType='password'
                         secureTextEntry={showPassword}
-                        onChange={e => handleConfirmPassword(e)}
+                        onChangeText={e => handleConfirmPassword(e)}
                         keyboardType={"numeric"}
-                        // value={"1234"}
+
                         condition={
                             confirmPassword.length < 1 ? null : password === confirmPassword ? (<Feather name="check-circle" color="green" size={20} />)
                                 :
                                 (<MaterialIcons name="error" color="red" size={20} />)
-
-
 
                         }
                     >
