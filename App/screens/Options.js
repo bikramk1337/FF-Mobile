@@ -1,6 +1,7 @@
 import React from "react"
 import { StyleSheet, SafeAreaView, ScrollView, Alert, Linking } from "react-native"
-import colors from "../constants/colors"
+
+import colors from '../constants/colors'
 import { Button } from 'react-native-paper';
 import { RowItem, RowSeparator } from "../components/RowItem";
 

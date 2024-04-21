@@ -4,7 +4,6 @@ import validateEmail from '../util/validateEmail';
 const useEmailValidation = () => {
     const [email, setEmail] = useState('');
     const [emailVerified, setEmailVerified] = useState(false);
-
     const [password, setPassword] = useState('')
     const [confirmPassword, setconfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(true)
@@ -20,13 +19,12 @@ const useEmailValidation = () => {
 
 
     const handleEmail = (emailVar) => {
-
         setEmailVerified(validateEmail(emailVar))
         setEmail(emailVar);
 
 
     };
-    console.log(email)
+
 
 
 

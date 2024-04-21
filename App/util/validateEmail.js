@@ -1,6 +1,11 @@
 const validateEmail = (email) => {
-    const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{3})+$/;
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
 }
 
 export default validateEmail;
+
+
+
+
+

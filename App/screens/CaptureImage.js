@@ -19,15 +19,15 @@ const styles = StyleSheet.create({
 
     },
     cardStyle: {
-        width: screenWidth * 0.9, // 90% of the screen width
-        height: screenHeight * 0.7, // 40% of the screen height
+        width: screenWidth * 0.9, 
+        height: screenHeight * 0.7, 
         margin: 20,
         alignItems: "center"
 
     },
     cardImage: {
-        width: screenWidth * 0.8, // 90% of the screen width
-        height: screenHeight * 0.5, // 40% of the screen height
+        width: screenWidth * 0.8, 
+        height: screenHeight * 0.5, 
 
     },
 
@@ -49,7 +49,6 @@ export default () => {
     const [image, setImage] = useState(null)
 
     const pickImage = async () => {
-        // Ask for permission to access the photo library
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             alert('Sorry, we need camera roll permissions to make this work!');
@@ -76,14 +75,12 @@ export default () => {
         }
     };
     const captureImage = async () => {
-        // Ask for permission to access the camera
         const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
         if (cameraStatus.status !== 'granted') {
             alert('Sorry, we need camera permissions to make this work!');
             return;
         }
 
-        // Ask for permission to access the photo library
         const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (libraryStatus.status !== 'granted') {
             alert('Sorry, we need camera roll permissions to make this work!');

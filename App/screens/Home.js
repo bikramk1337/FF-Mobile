@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, StatusBar, SafeAreaView, Image, TouchableOpacity, ScrollView } from "react-native"
-
 import colors from '../constants/colors'
 import { Button, Icon } from 'react-native-paper'
-import Options from "../screens/Options"
 
 
 
@@ -16,7 +14,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.background,
-        // justifyContent: "center"
     },
     logoContainer: {
         alignItems: "center",
