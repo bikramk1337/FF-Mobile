@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "FaunaAPP",
+    "name": "Fauna Finder",
     "slug": "FaunaAPP",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#6f6fff"
     },
     "android": {
       "package": "com.yourcompany.faunaapp",
