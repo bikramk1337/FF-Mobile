@@ -48,6 +48,8 @@ const Explore = () => {
             </View>
           )}
           ListFooterComponent={<View style={{ height: 100 }}></View>}
+          initialNumToRender={3}
+          removeClippedSubviews={true}
         />
       )}
     </SafeAreaView>

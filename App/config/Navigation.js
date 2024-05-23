@@ -116,6 +116,49 @@ const MainStackScreen = () => {
     useContext(ClassifierContext);
   const [token, setToken] = useContext(AuthContext);
 
+  useEffect(() => {
+    fetchInitialData();
+  }, [token]);
+
+  const fetchInitialData = async () => {
+    const accessToken = await SecureStore.getItemAsync("accessToken");
+    if (token && accessToken) {
+      fetchCurrentUser();
+      fetchClassificationHistory();
+    }
+  };
+
+  const fetchClassificationHistory = async () => {
+    try {
+      const response = await getAllClassificationHistory();
+      if (response.status === 200 && response.data?.data?.length > 0) {
+        setClassificationHistory(response.data?.data);
+      } else {
+        setClassificationHistory([]);
+      }
+    } catch (error) {
+      setClassificationHistory([]);
+    }
+  };
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await getCurrentUser();
+      if (response.status === 200 && response.data) {
+        setCurrentUser(response.data);
+      } else {
+        setCurrentUser({});
+        setToken("");
+        await SecureStore.setItemAsync("accessToken", "");
+      }
+    } catch (error) {
+      alert("Error: " + error.message);
+      setCurrentUser({});
+      setToken("");
+      await SecureStore.setItemAsync("accessToken", "");
+    }
+  };
+
   const fetchClassificationFromLabel = async (classification_history) => {
     try {
       const response = await getFaunaByLabel(classification_history.prediction);
@@ -529,6 +572,7 @@ const MainStackScreen = () => {
                     setShowUserMenu(false);
                     SecureStore.setItemAsync("accessToken", "");
                     setCurrentUser({});
+                    setClassificationHistory([]);
                     setToken("");
                   }}
                   title="Logout"
@@ -606,6 +650,7 @@ const MainStackScreen = () => {
                     setShowUserMenu(false);
                     SecureStore.setItemAsync("accessToken", "");
                     setCurrentUser({});
+                    setClassificationHistory([]);
                     setToken("");
                   }}
                   title="Logout"
@@ -651,49 +696,6 @@ export default () => {
 
     getToken();
   }, []);
-
-  useEffect(() => {
-    fetchInitialData();
-  }, [token]);
-
-  const fetchInitialData = async () => {
-    const accessToken = await SecureStore.getItemAsync("accessToken");
-    if (token && accessToken) {
-      fetchCurrentUser();
-      fetchClassificationHistory();
-    }
-  };
-
-  const fetchClassificationHistory = async () => {
-    try {
-      const response = await getAllClassificationHistory();
-      if (response.status === 200 && response.data?.data?.length > 0) {
-        setClassificationHistory(response.data?.data);
-      } else {
-        setClassificationHistory([]);
-      }
-    } catch (error) {
-      setClassificationHistory([]);
-    }
-  };
-
-  const fetchCurrentUser = async () => {
-    try {
-      const response = await getCurrentUser();
-      if (response.status === 200 && response.data) {
-        setCurrentUser(response.data);
-      } else {
-        setCurrentUser({});
-        setToken("");
-        await SecureStore.setItemAsync("accessToken", "");
-      }
-    } catch (error) {
-      alert("Error: " + error.message);
-      setCurrentUser({});
-      setToken("");
-      await SecureStore.setItemAsync("accessToken", "");
-    }
-  };
 
   return (
     <AuthContext.Provider value={[token, setToken]}>
