@@ -150,7 +150,11 @@ const AIChatComponent = ({ fauna }) => {
           onChangeText={setInputText}
           placeholderTextColor={colors.darkGray}
         />
-        <Button title="Send" onPress={handleSend} disabled={isTyping} />
+        <Button
+          title="Send"
+          onPress={handleSend}
+          disabled={isTyping || inputText?.length === 0}
+        />
       </View>
     </KeyboardAvoidingView>
   );

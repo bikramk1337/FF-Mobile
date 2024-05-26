@@ -276,6 +276,7 @@ const FaunaDetailModal = ({
       onRequestClose={() => {
         setModalVisible(!modalVisible);
       }}
+      keyboardShouldPersistTaps="handled"
     >
       <StatusBar style="light" />
 

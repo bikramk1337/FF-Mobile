@@ -123,6 +123,7 @@ export default ({ navigation }) => {
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={{ flexGrow: 1 }}
         scrollEnabled={true}
+        keyboardShouldPersistTaps="handled"
       >
         <PaperProvider>
           <Portal>
