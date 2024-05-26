@@ -4,12 +4,12 @@ import * as SecureStore from "expo-secure-store";
 // const rootUrl = "http://localhost:8888/api/v1";
 const rootUrl = "https://api.odinsvault.xyz/api/v1";
 
-const fetchProcessor = async ({ method, url, data, token, isPrivate }) => {
-  const headers = {};
+const fetchProcessor = async ({ method, url, data, headers, token, isPrivate }) => {
+  const authHeaders = {};
   if (isPrivate) {
     const accessToken = await SecureStore.getItemAsync("accessToken");
     if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
+      authHeaders["Authorization"] = `Bearer ${accessToken}`;
     }
   }
   try {
@@ -17,23 +17,36 @@ const fetchProcessor = async ({ method, url, data, token, isPrivate }) => {
       method,
       url,
       data,
-      headers,
+      headers: {
+        ...headers,
+        ...authHeaders,
+      },
     });
     return res;
   } catch (error) {
-    console.error("error:", error);
-    if (error.response) {
-      return {
-        status: error.response.status,
-        message: error.response.data.detail || "Unknown error occurred",
-      };
-    } else {
-      return {
-        status: 500,
-        message: "network error",
-      };
-    }
+  console.error("Error:", error);
+  if (error.response) {
+    console.error("Response Data:", error.response.data);
+    console.error("Response Status:", error.response.status);
+    console.error("Response Headers:", error.response.headers);
+    return {
+      status: error.response.status,
+      message: error.response.data.detail || "Unknown error occurred",
+    };
+  } else if (error.request) {
+    console.error("Request:", error.request);
+    return {
+      status: 500,
+      message: "No response received from the server",
+    };
+  } else {
+    console.error("Error Message:", error.message);
+    return {
+      status: 500,
+      message: "Error setting up the request",
+    };
   }
+}
 };
 
 export const loginUser = async (loginData) => {
@@ -114,11 +127,11 @@ export const getUserById = async (id) => {
 
 export const uploadAndPredict = async (image) => {
   const formData = new FormData();
+
   formData.append("file", {
     uri: image.uri,
-    // name: image.fileName,
-    name: "IMAGE",
-    type: image.mimeType,
+    name: image.fileName || "IMAGE",
+    type: image.mimeType || "image/jpeg",
   });
 
   const url = `${rootUrl}/classifier/upload-and-predict`;
