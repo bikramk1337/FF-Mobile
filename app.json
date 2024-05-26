@@ -22,13 +22,23 @@
             "host": "reset-password",
             "pathPrefix": "/"
           },
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
     "ios": {
       "bundleIdentifier": "com.yourcompany.faunaapp",
-      "associatedDomains": ["applinks:yourdomain.com"]
+      "associatedDomains": [
+        "applinks:yourdomain.com"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f0c28de9-7769-4020-bd68-ba42b677f6f9"
+      }
     }
   }
 }
