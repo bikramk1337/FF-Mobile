@@ -1,7 +1,6 @@
 import {
   Dimensions,
   FlatList,
-  Image,
   Modal,
   ScrollView,
   Text,
@@ -10,10 +9,11 @@ import {
 import colors from "../../constants/colors";
 import { StatusBar } from "expo-status-bar";
 import { Button, Card, IconButton, SegmentedButtons } from "react-native-paper";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import AIChatComponent from "../ChatView/ChatView";
 import { Ionicons } from "@expo/vector-icons";
 import { getImageFromURL } from "../../helper/axios";
+import { Image } from "expo-image";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -133,7 +133,7 @@ const DetectionResult = ({ fauna }) => {
   );
 };
 
-const RelatedImages = () => {
+const RelatedImages = memo(() => {
   const dummyImages = [
     { url: "https://via.placeholder.com/150" },
     { url: "https://via.placeholder.com/150" },
@@ -163,7 +163,7 @@ const RelatedImages = () => {
       // columnWrapperStyle={{ gap: 5 }}
     />
   );
-};
+});
 
 const Chat = ({ fauna }) => {
   return (
@@ -276,6 +276,7 @@ const FaunaDetailModal = ({
       onRequestClose={() => {
         setModalVisible(!modalVisible);
       }}
+      keyboardShouldPersistTaps="handled"
     >
       <StatusBar style="light" />
 
@@ -292,11 +293,10 @@ const FaunaDetailModal = ({
             style={{
               width: windowWidth,
               height: windowWidth,
-              // maxHeight: windowHeight - 300,
             }}
-            source={{
-              uri: image,
-            }}
+            source={image}
+            contentFit="cover"
+            // placeholder={{ blurhash }}
           />
         ) : (
           <View

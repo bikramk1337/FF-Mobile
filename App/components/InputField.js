@@ -9,6 +9,7 @@ const style = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 1,
     borderColor: "#000",
+    alignItems: "center",
   },
   textInput: {
     flex: 1,

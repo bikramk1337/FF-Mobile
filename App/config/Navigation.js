@@ -22,6 +22,7 @@ import {
   ImageBackground,
   Dimensions,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import {
   Button,
@@ -115,6 +116,51 @@ const MainStackScreen = () => {
   const [classificationHistory, setClassificationHistory] =
     useContext(ClassifierContext);
   const [token, setToken] = useContext(AuthContext);
+
+  useEffect(() => {
+    if (token) {
+      fetchInitialData();
+    }
+  }, [token]);
+
+  const fetchInitialData = async () => {
+    const accessToken = await SecureStore.getItemAsync("accessToken");
+    if (token && accessToken) {
+      fetchCurrentUser();
+      fetchClassificationHistory();
+    }
+  };
+
+  const fetchClassificationHistory = async () => {
+    try {
+      const response = await getAllClassificationHistory();
+      if (response.status === 200 && response.data?.data?.length > 0) {
+        setClassificationHistory(response.data?.data);
+      } else {
+        setClassificationHistory([]);
+      }
+    } catch (error) {
+      setClassificationHistory([]);
+    }
+  };
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await getCurrentUser();
+      if (response.status === 200 && response.data) {
+        setCurrentUser(response.data);
+      } else {
+        setCurrentUser({});
+        setToken("");
+        await SecureStore.setItemAsync("accessToken", "");
+      }
+    } catch (error) {
+      alert("Error: " + error.message);
+      setCurrentUser({});
+      setToken("");
+      await SecureStore.setItemAsync("accessToken", "");
+    }
+  };
 
   const fetchClassificationFromLabel = async (classification_history) => {
     try {
@@ -268,7 +314,7 @@ const MainStackScreen = () => {
       <>
         <View
           style={{
-            top: -20,
+            bottom: 40,
             width: 80,
             height: 80,
             // backgroundColor: "#fff",
@@ -414,7 +460,7 @@ const MainStackScreen = () => {
           flex: 1,
 
           position: "absolute",
-          bottom: 80,
+          bottom: 100,
           zIndex: 1000,
           width: "100%",
         },
@@ -458,23 +504,33 @@ const MainStackScreen = () => {
       screenOptions={() => ({
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.darkGray,
-        tabBarStyle: {
-          position: "absolute",
-          bottom: 20,
-          left: 20,
-          right: 20,
-          borderRadius: 15,
-          display: "flex",
-          elevation: 4,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 4,
-          },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-        },
+        tabBarStyle:
+          Platform.OS === "ios"
+            ? {
+                elevation: 4,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 4,
+                },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+              }
+            : {
+                elevation: 4,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 4,
+                },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                height: 60,
+              },
         headerShadowVisible: true,
+        tabBarItemStyle: {
+          paddingBottom: 10,
+        },
       })}
     >
       <MainBottomTab.Screen
@@ -483,69 +539,76 @@ const MainStackScreen = () => {
         options={{
           tabBarLabel: "My Fauna",
           headerTitle: "My Fauna",
-          headerLeft: () => (
-            <PaperProvider>
-              <Menu
-                visible={showUserMenu}
-                onDismiss={() => {
-                  setShowUserMenu(false);
-                }}
-                style={{ width: 300 }}
-                anchor={
-                  <TouchableOpacity
-                    onPress={() => {
-                      setShowUserMenu(true);
-                    }}
-                    style={{ marginLeft: 16 }}
-                  >
-                    <UserAvatar
-                      size={38}
-                      name={
-                        currentUser && currentUser.full_name
-                          ? currentUser.full_name
-                          : "A"
-                      }
-                      bgColors={["#ff5100", "#00d0ff", "#5900ff", "#ff00bf"]}
-                    />
-                  </TouchableOpacity>
-                }
-              >
-                <Menu.Item
-                  title={
-                    currentUser && currentUser.full_name
-                      ? currentUser.full_name
-                      : "Anonymous"
-                  }
-                />
-                {currentUser.email ? (
-                  <Menu.Item title={currentUser.email} />
-                ) : (
-                  <></>
-                )}
-
-                <Divider />
-                <Menu.Item
-                  onPress={() => {
+          headerLeft: () =>
+            currentUser && currentUser.full_name ? (
+              <PaperProvider>
+                <Menu
+                  visible={showUserMenu}
+                  onDismiss={() => {
                     setShowUserMenu(false);
-                    SecureStore.setItemAsync("accessToken", "");
-                    setCurrentUser({});
-                    setToken("");
                   }}
-                  title="Logout"
-                />
-              </Menu>
-            </PaperProvider>
-          ),
+                  style={{ width: 300 }}
+                  anchor={
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowUserMenu(true);
+                      }}
+                      style={{
+                        marginLeft: 16,
+                        marginTop: Platform.OS === "ios" ? 0 : 10,
+                      }}
+                    >
+                      <UserAvatar
+                        size={38}
+                        name={
+                          currentUser && currentUser.full_name
+                            ? currentUser.full_name
+                            : "A"
+                        }
+                        bgColors={["#ff5100", "#00d0ff", "#5900ff", "#ff00bf"]}
+                      />
+                    </TouchableOpacity>
+                  }
+                >
+                  <Menu.Item
+                    title={
+                      currentUser && currentUser.full_name
+                        ? currentUser.full_name
+                        : "Anonymous"
+                    }
+                  />
+                  {currentUser.email ? (
+                    <Menu.Item title={currentUser.email} />
+                  ) : (
+                    <></>
+                  )}
+
+                  <Divider />
+                  <Menu.Item
+                    onPress={() => {
+                      setShowUserMenu(false);
+                      SecureStore.setItemAsync("accessToken", "");
+                      setCurrentUser({});
+                      setClassificationHistory([]);
+                      setToken("");
+                    }}
+                    title="Logout"
+                  />
+                </Menu>
+              </PaperProvider>
+            ) : (
+              <></>
+            ),
 
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="home" color={color} size={size} />
           ),
-          tabBarIconStyle: {
-            top: 10,
-          },
-          tabBarLabelStyle: {
-            top: 8,
-          },
+          // tabBarIconStyle: {
+          //   top: 10,
+          // },
+          // tabBarLabelStyle: {
+          //   top: 8,
+          // },
         }}
       />
       <MainBottomTab.Screen
@@ -560,71 +623,78 @@ const MainStackScreen = () => {
         component={Explore}
         options={{
           headerTitle: "Explore the Wild",
-          headerLeft: () => (
-            <PaperProvider>
-              <Menu
-                visible={showUserMenu}
-                onDismiss={() => {
-                  setShowUserMenu(false);
-                }}
-                style={{ width: 300 }}
-                anchor={
-                  <TouchableOpacity
-                    onPress={() => {
-                      setShowUserMenu(true);
-                    }}
-                    style={{ marginLeft: 16 }}
-                  >
-                    <UserAvatar
-                      size={38}
-                      name={
-                        currentUser && currentUser.full_name
-                          ? currentUser.full_name
-                          : "A"
-                      }
-                      bgColors={["#ff5100", "#00d0ff", "#5900ff", "#ff00bf"]}
-                    />
-                  </TouchableOpacity>
-                }
-              >
-                <Menu.Item
-                  title={
-                    currentUser && currentUser.full_name
-                      ? currentUser.full_name
-                      : "Anonymous"
-                  }
-                />
-                {currentUser.email ? (
-                  <Menu.Item title={currentUser.email} />
-                ) : (
-                  <></>
-                )}
-
-                <Divider />
-                <Menu.Item
-                  onPress={() => {
+          headerLeft: () =>
+            currentUser && currentUser.full_name ? (
+              <PaperProvider>
+                <Menu
+                  visible={showUserMenu}
+                  onDismiss={() => {
                     setShowUserMenu(false);
-                    SecureStore.setItemAsync("accessToken", "");
-                    setCurrentUser({});
-                    setToken("");
                   }}
-                  title="Logout"
-                />
-              </Menu>
-            </PaperProvider>
-          ),
+                  style={{ width: 300 }}
+                  anchor={
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowUserMenu(true);
+                      }}
+                      style={{
+                        marginLeft: 16,
+                        marginTop: Platform.OS === "ios" ? 0 : 10,
+                      }}
+                    >
+                      <UserAvatar
+                        size={38}
+                        name={
+                          currentUser && currentUser.full_name
+                            ? currentUser.full_name
+                            : "A"
+                        }
+                        bgColors={["#ff5100", "#00d0ff", "#5900ff", "#ff00bf"]}
+                      />
+                    </TouchableOpacity>
+                  }
+                >
+                  <Menu.Item
+                    title={
+                      currentUser && currentUser.full_name
+                        ? currentUser.full_name
+                        : "Anonymous"
+                    }
+                  />
+                  {currentUser.email ? (
+                    <Menu.Item title={currentUser.email} />
+                  ) : (
+                    <></>
+                  )}
+
+                  <Divider />
+                  <Menu.Item
+                    onPress={() => {
+                      setShowUserMenu(false);
+                      SecureStore.setItemAsync("accessToken", "");
+                      setCurrentUser({});
+                      setClassificationHistory([]);
+                      setToken("");
+                    }}
+                    title="Logout"
+                  />
+                </Menu>
+              </PaperProvider>
+            ) : (
+              <></>
+            ),
 
           tabBarLabel: "Explore",
 
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="forest" color={color} size={size} />
           ),
-          tabBarIconStyle: {
-            top: 10,
-          },
-          tabBarLabelStyle: {
-            top: 8,
-          },
+          // tabBarIconStyle: {
+          //   top: 10,
+          // },
+          // tabBarLabelStyle: {
+          //   top: 8,
+          // },
         }}
       />
     </MainBottomTab.Navigator>
@@ -651,49 +721,6 @@ export default () => {
 
     getToken();
   }, []);
-
-  useEffect(() => {
-    fetchInitialData();
-  }, [token]);
-
-  const fetchInitialData = async () => {
-    const accessToken = await SecureStore.getItemAsync("accessToken");
-    if (token && accessToken) {
-      fetchCurrentUser();
-      fetchClassificationHistory();
-    }
-  };
-
-  const fetchClassificationHistory = async () => {
-    try {
-      const response = await getAllClassificationHistory();
-      if (response.status === 200 && response.data?.data?.length > 0) {
-        setClassificationHistory(response.data?.data);
-      } else {
-        setClassificationHistory([]);
-      }
-    } catch (error) {
-      setClassificationHistory([]);
-    }
-  };
-
-  const fetchCurrentUser = async () => {
-    try {
-      const response = await getCurrentUser();
-      if (response.status === 200 && response.data) {
-        setCurrentUser(response.data);
-      } else {
-        setCurrentUser({});
-        setToken("");
-        await SecureStore.setItemAsync("accessToken", "");
-      }
-    } catch (error) {
-      alert("Error: " + error.message);
-      setCurrentUser({});
-      setToken("");
-      await SecureStore.setItemAsync("accessToken", "");
-    }
-  };
 
   return (
     <AuthContext.Provider value={[token, setToken]}>

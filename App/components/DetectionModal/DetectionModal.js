@@ -6,13 +6,13 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   FlatList,
-  Image,
 } from "react-native";
 import React from "react";
 import colors from "../../constants/colors";
 import { Button, Card, SegmentedButtons } from "react-native-paper";
 import AIChatComponent from "../ChatView/ChatView";
 import { StatusBar } from "expo-status-bar";
+import { Image } from "expo-image";
 
 const KeyValueContainer = ({ name, value }) => {
   return (
@@ -216,9 +216,21 @@ const DetectionModal = ({ modalVisible, setModalVisible, image }) => {
           // theme={{ colors: { surfaceVariant: colors.white } }}
           style={{ borderRadius: 0 }}
         >
-          <Card.Cover
+          {/* <Card.Cover
             source={{ uri: image }}
             style={{ width: "100%", borderRadius: 0 }}
+          /> */}
+          <Image
+            style={{
+              width: windowWidth,
+              height: windowWidth,
+              // borderRadius: 14,
+              // borderWidth: 1,
+              borderColor: colors.lightGray,
+            }}
+            source={image}
+            contentFit="cover"
+            placeholder={{ blurhash }}
           />
         </Card>
         <TabButtons value={tab} setValue={setTab} />

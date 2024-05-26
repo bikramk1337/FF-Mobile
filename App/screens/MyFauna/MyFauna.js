@@ -70,6 +70,8 @@ const MyFauna = () => {
             </View>
           )}
           ListFooterComponent={<View style={{ height: 100 }}></View>}
+          removeClippedSubviews={true}
+          initialNumToRender={3}
         />
       )}
 

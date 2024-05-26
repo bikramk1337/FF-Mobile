@@ -116,8 +116,9 @@ export const uploadAndPredict = async (image) => {
   const formData = new FormData();
   formData.append("file", {
     uri: image.uri,
-    name: image.fileName,
-    type: image.type,
+    // name: image.fileName,
+    name: "IMAGE",
+    type: image.mimeType,
   });
 
   const url = `${rootUrl}/classifier/upload-and-predict`;
@@ -135,7 +136,18 @@ export const uploadAndPredict = async (image) => {
 };
 
 export const getAllClassificationHistory = async () => {
-  const url = `${rootUrl}/classifier/classification-histories`;
+  const url = `${rootUrl}/classifier/classification-histories_all`;
+  const obj = {
+    method: "get",
+    url,
+    isPrivate: true,
+  };
+
+  return fetchProcessor(obj);
+};
+
+export const getUsesrClassificationHistory = async () => {
+  const url = `${rootUrl}/classifier/classification-histories_current`;
   const obj = {
     method: "get",
     url,
@@ -179,7 +191,7 @@ export const getImageFromURL = async (image_url) => {
 };
 
 export const aiChat = async (params) => {
-  const prompt = `context:"${params.faunaDescription}" request:"${params.request}". Generate response for the given request on the given context only."`;
+  const prompt = `context:"${params.faunaDescription}" request:"${params.request}". Generate short response for the given request on the given context only."`;
   const url = `${rootUrl}/llm/chat?prompt=${prompt}`;
   const obj = {
     method: "post",

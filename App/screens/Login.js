@@ -66,9 +66,13 @@ export default ({ navigation }) => {
 
   const [token, setToken] = useContext(AuthContext);
 
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const handleLogin = async (e) => {
+    setIsLoggingIn(true);
     if (!emailVerified) {
       alert("please verify your email");
+      setIsLoggingIn(false);
       return;
     }
     const formData = new URLSearchParams();
@@ -78,8 +82,12 @@ export default ({ navigation }) => {
     try {
       const response = await loginUser(formData);
       if (response.status === 200 && response.data.access_token) {
-        setToken(response.data.access_token);
-        SecureStore.setItemAsync("accessToken", response.data.access_token);
+        SecureStore.setItemAsync(
+          "accessToken",
+          response.data.access_token
+        ).then(() => {
+          setToken(response.data.access_token);
+        });
       } else {
         setToken("");
         alert(response.message);
@@ -89,6 +97,7 @@ export default ({ navigation }) => {
       console.error("Login error:", error);
       alert("Error during request setup: " + error.message);
     }
+    setIsLoggingIn(false);
   };
 
   const handleForgetPassword = () => {
@@ -103,6 +112,7 @@ export default ({ navigation }) => {
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={{ flexGrow: 1 }}
         scrollEnabled={true}
+        keyboardShouldPersistTaps="handled"
       >
         <PaperProvider>
           <Portal>
@@ -190,7 +200,7 @@ export default ({ navigation }) => {
                 style={{ borderColor: colors.white }}
               ></InputField>
               <CustomButton
-                label={"Login"}
+                label={isLoggingIn ? "Logging in..." : "Login"}
                 onPress={(e) => handleLogin(e)}
                 icon={"login"}
                 style={{
@@ -201,13 +211,15 @@ export default ({ navigation }) => {
                   margin: 0,
                   padding: 0,
                 }}
+                disabled={isLoggingIn}
               />
             </View>
+            <Divider />
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "center",
-                marginTop: 30,
+                marginVertical: 30,
               }}
             >
               <Text> New to the app?</Text>
